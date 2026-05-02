@@ -1,0 +1,20 @@
+# Build folders
+bin/
+out/
+target/
+
+# IDE files
+.idea/
+.project
+.classpath
+.settings/
+*.iml
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Application secrets
+# config.properties should ideally be ignored if it contains real passwords
+# but for now we keep it as per current project state unless specified.
+# src/main/resources/config.properties

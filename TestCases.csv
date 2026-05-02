@@ -1,0 +1,22 @@
+Test Case ID,Module / Feature,Test Description,Pre-conditions,Test Steps,Expected Result,Status (Pass/Fail)
+TC-001,Authentication,Verify user login with valid credentials,User account must exist in the database,"1. Open the application
+2. Enter a valid username
+3. Enter the correct password
+4. Click 'Login'",User is successfully logged in and redirected to the Main Application window.,
+TC-002,Authentication,Verify user login with invalid credentials,System is running,"1. Open the application
+2. Enter a valid username
+3. Enter an incorrect password
+4. Click 'Login'","Login fails. System displays an ""Invalid credentials"" error message.",
+TC-003,Admin Panel,Verify Admin can add a new item,Logged in as Administrator,"1. Navigate to Admin Panel
+2. Fill in Item details (Name, Price, Category, etc.)
+3. Click 'Add Item'",The new item is successfully inserted into the database and appears in the inventory.,
+TC-004,Admin Panel,Verify Admin Dashboard Analytics,"Logged in as Administrator, database has data","1. Navigate to Admin Panel
+2. View the Analytics section","The correct total counts for Users, Items, and Searches are displayed accurately.",
+TC-005,Rec. Engine,Verify recommendation generation for a user,User has existing preferences/history saved,"1. Log in as a User
+2. Navigate to Recommendations view
+3. Request recommendations",The system displays a list of items (GlassCards) that match the user's category preferences and past interactions.,
+TC-006,Rec. Engine,Verify recommendations for a brand new user,User is newly registered (no history),"1. Log in as a new User
+2. Navigate to Recommendations",The system displays popular or default baseline items since there is no user history.,
+TC-007,Data Import,Verify CSV Item validation,A CSV file with item data exists,"1. Trigger the CSV import process
+2. System parses the CSV rows into CsvItem","Items with empty names are rejected (isValid() returns false), valid items are imported.",
+TC-008,Database,Verify database connection stability,MySQL/Database server is running,1. Perform multiple read/write actions (e.g. refreshing recommendations) rapidly,The DatabaseManager handles connections without crashing or leaking memory.,
