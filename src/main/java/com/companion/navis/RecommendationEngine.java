@@ -135,6 +135,41 @@ public class RecommendationEngine {
             score += 30.0; // Significant boost for correct category
         }
 
+        // 1. Personalized Diet Preference Boost/Penalty
+        String userDiet = prefs.getDiet();
+        String itemDiet = item.getDietType();
+        if (userDiet != null && !userDiet.trim().isEmpty() && !userDiet.equalsIgnoreCase("Any")) {
+            if (userDiet.equalsIgnoreCase("Veg")) {
+                if ("Non-Veg".equalsIgnoreCase(itemDiet)) {
+                    score -= 100.0; // Heavy penalty for Veg user seeing Non-Veg items
+                } else if ("Veg".equalsIgnoreCase(itemDiet)) {
+                    score += 25.0;  // Boost for match
+                }
+            } else if (userDiet.equalsIgnoreCase("Non-Veg")) {
+                if ("Non-Veg".equalsIgnoreCase(itemDiet)) {
+                    score += 25.0;  // Boost for match
+                }
+            }
+        }
+
+        // 2. Personalized Budget Preference Boost
+        String userBudget = prefs.getBudget();
+        double price = item.getPrice();
+        if (userBudget != null && !userBudget.trim().isEmpty()) {
+            boolean fitsBudget = false;
+            if (userBudget.equalsIgnoreCase("Low") && price <= 20.0) {
+                fitsBudget = true;
+            } else if (userBudget.equalsIgnoreCase("Medium") && price > 20.0 && price <= 100.0) {
+                fitsBudget = true;
+            } else if (userBudget.equalsIgnoreCase("High") && price > 100.0) {
+                fitsBudget = true;
+            }
+            
+            if (fitsBudget) {
+                score += 20.0; // Boost for matching user's budget bracket
+            }
+        }
+
         if (!keywords.isEmpty()) {
             String name = (item.getName() != null ? item.getName() : "").toLowerCase();
             String tags = (item.getTags() != null ? item.getTags() : "").toLowerCase();

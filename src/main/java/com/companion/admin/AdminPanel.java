@@ -1,72 +1,287 @@
 package com.companion.admin;
 
 import com.companion.karan.BackgroundThreadManager;
-// AnalyticsDAO is in same package
+import com.companion.navis.CsvItem;
+import com.companion.navis.GlassCard;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdminPanel extends JPanel {
     private AnalyticsDAO analyticsDAO;
-    private JLabel totalUsersLabel;
-    private JLabel totalItemsLabel;
+    private JLabel totalUsersValLabel;
+    private JLabel totalItemsValLabel;
+    private JLabel totalSearchesValLabel;
 
     public AdminPanel() {
         this.analyticsDAO = new AnalyticsDAO();
         setLayout(new BorderLayout());
-        setBackground(Color.decode("#ECFEFF")); // BG_LIGHT
+        setBackground(Color.decode("#F1F5F9")); // Slate 100
 
-        // Title
-        JLabel title = new JLabel("Admin Dashboard", SwingConstants.CENTER);
+        // Header Panel
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#CBD5E1")),
+            new EmptyBorder(20, 30, 20, 30)
+        ));
+
+        JLabel title = new JLabel("Admin Control Center");
         title.setFont(new Font("Inter", Font.BOLD, 24));
-        title.setForeground(Color.decode("#164E63")); // TEXT_DARK
-        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        add(title, BorderLayout.NORTH);
+        title.setForeground(Color.decode("#1E293B")); // Slate 800
+        headerPanel.add(title, BorderLayout.WEST);
+        add(headerPanel, BorderLayout.NORTH);
 
-        // Center Content (Statistics)
-        JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        
-        totalUsersLabel = new JLabel("Total Users: 0");
-        totalUsersLabel.setFont(new Font("Inter", Font.BOLD, 18));
-        totalUsersLabel.setForeground(Color.decode("#0E7490"));
+        // Stats Cards Panel
+        JPanel statsContainer = new JPanel(new GridLayout(1, 3, 20, 0));
+        statsContainer.setOpaque(false);
+        statsContainer.setBorder(new EmptyBorder(30, 30, 20, 30));
 
-        totalItemsLabel = new JLabel("Total Items: 0");
-        totalItemsLabel.setFont(new Font("Inter", Font.BOLD, 18));
-        totalItemsLabel.setForeground(Color.decode("#0E7490"));
+        GlassCard usersCard = createStatsCard("Registered Users", totalUsersValLabel = new JLabel("0"), Color.decode("#6366F1"));
+        GlassCard itemsCard = createStatsCard("Total Recommendations", totalItemsValLabel = new JLabel("0"), Color.decode("#059669"));
+        GlassCard searchesCard = createStatsCard("Analytics Searches", totalSearchesValLabel = new JLabel("0"), Color.decode("#D97706"));
 
-        gbc.gridy = 0;
-        centerPanel.add(totalUsersLabel, gbc);
-        gbc.gridy = 1;
-        centerPanel.add(totalItemsLabel, gbc);
+        statsContainer.add(usersCard);
+        statsContainer.add(itemsCard);
+        statsContainer.add(searchesCard);
 
-        add(centerPanel, BorderLayout.CENTER);
+        add(statsContainer, BorderLayout.CENTER);
 
-        // Action Panel (Simple Refresh)
-        JPanel actionPanel = new JPanel(new FlowLayout());
-        actionPanel.setOpaque(false);
-        JButton refreshBtn = new JButton("Refresh Statistics");
-        refreshBtn.setBackground(Color.decode("#0891B2")); 
-        refreshBtn.setForeground(Color.WHITE);
-        refreshBtn.setFont(new Font("Inter", Font.BOLD, 14));
-        refreshBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
+        // Footer Actions Panel
+        JPanel actionsContainer = new JPanel(new BorderLayout());
+        actionsContainer.setOpaque(false);
+        actionsContainer.setBorder(new EmptyBorder(10, 30, 30, 30));
+
+        JPanel leftActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftActions.setOpaque(false);
+
+        JButton refreshBtn = new JButton("Refresh Analytics");
+        styleActionButton(refreshBtn, Color.decode("#475569"), Color.WHITE);
         refreshBtn.addActionListener(e -> refreshStats());
-        
-        JButton addItemBtn = new JButton("Add New Item +");
-        addItemBtn.setBackground(Color.decode("#059669")); // Green
-        addItemBtn.setForeground(Color.WHITE);
-        addItemBtn.setFont(new Font("Inter", Font.BOLD, 14));
-        addItemBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        addItemBtn.addActionListener(e -> showAddItemDialog());
+        leftActions.add(refreshBtn);
 
-        actionPanel.add(refreshBtn);
-        actionPanel.add(addItemBtn);
-        add(actionPanel, BorderLayout.SOUTH);
+        JPanel rightActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightActions.setOpaque(false);
+
+        JButton bulkImportBtn = new JButton("Bulk Import CSV");
+        styleActionButton(bulkImportBtn, Color.decode("#2563EB"), Color.WHITE); // Royal Blue
+        bulkImportBtn.addActionListener(e -> triggerBulkImport());
+        rightActions.add(bulkImportBtn);
+
+        JButton addItemBtn = new JButton("Add Single Item +");
+        styleActionButton(addItemBtn, Color.decode("#059669"), Color.WHITE);
+        addItemBtn.addActionListener(e -> showAddItemDialog());
+        rightActions.add(addItemBtn);
+
+        actionsContainer.add(leftActions, BorderLayout.WEST);
+        actionsContainer.add(rightActions, BorderLayout.EAST);
+        add(actionsContainer, BorderLayout.SOUTH);
 
         refreshStats();
+    }
+
+    private GlassCard createStatsCard(String title, JLabel valLabel, Color color) {
+        GlassCard card = new GlassCard(16);
+        card.setLayout(new BorderLayout(0, 10));
+        card.setBorder(new EmptyBorder(25, 25, 25, 25));
+        card.setBackgroundColor(Color.WHITE);
+
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setFont(new Font("Inter", Font.BOLD, 14));
+        titleLabel.setForeground(Color.decode("#64748B")); // Slate 500
+
+        valLabel.setFont(new Font("Inter", Font.BOLD, 36));
+        valLabel.setForeground(color);
+
+        card.add(titleLabel, BorderLayout.NORTH);
+        card.add(valLabel, BorderLayout.CENTER);
+
+        // Soft visual hover feedback
+        card.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                card.setBackgroundColor(Color.decode("#F8FAFC"));
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                card.setBackgroundColor(Color.WHITE);
+            }
+        });
+
+        return card;
+    }
+
+    private void styleActionButton(JButton btn, Color bg, Color fg) {
+        btn.setFont(new Font("Inter", Font.BOLD, 14));
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setOpaque(true);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(180, 45));
+
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btn.setBackground(bg.brighter());
+            }
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btn.setBackground(bg);
+            }
+        });
+    }
+
+    private void refreshStats() {
+        BackgroundThreadManager.getInstance().execute(() -> {
+            int users = analyticsDAO.getTotalUsers();
+            int items = analyticsDAO.getTotalItems();
+            int searches = analyticsDAO.getTotalSearches();
+            SwingUtilities.invokeLater(() -> {
+                totalUsersValLabel.setText(String.valueOf(users));
+                totalItemsValLabel.setText(String.valueOf(items));
+                totalSearchesValLabel.setText(String.valueOf(searches));
+            });
+        });
+    }
+
+    private void triggerBulkImport() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select Items CSV File to Import");
+        int userSelection = fileChooser.showOpenDialog(this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToImport = fileChooser.getSelectedFile();
+            
+            // Show custom loading dialog
+            JDialog progressDialog = new JDialog((Frame)null, "Importing CSV...", true);
+            progressDialog.setSize(300, 120);
+            progressDialog.setLayout(new GridBagLayout());
+            progressDialog.setLocationRelativeTo(this);
+            
+            JLabel statusLabel = new JLabel("Parsing and validating rows...");
+            statusLabel.setFont(new Font("Inter", Font.PLAIN, 14));
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+            gbc.gridx = 0; gbc.gridy = 0;
+            progressDialog.add(statusLabel, gbc);
+            gbc.gridy = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
+            progressDialog.add(progressBar, gbc);
+
+            BackgroundThreadManager.getInstance().execute(() -> {
+                List<CsvItem> itemsToImport = new ArrayList<>();
+                int skippedRows = 0;
+                
+                try (BufferedReader br = new BufferedReader(new FileReader(fileToImport))) {
+                    String headerLine = br.readLine();
+                    if (headerLine == null) {
+                        throw new Exception("Empty CSV file.");
+                    }
+
+                    List<String> headers = parseCsvLine(headerLine);
+                    Map<String, Integer> colMap = new HashMap<>();
+                    for (int i = 0; i < headers.size(); i++) {
+                        colMap.put(headers.get(i).toLowerCase().trim(), i);
+                    }
+
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        if (line.trim().isEmpty()) continue;
+                        List<String> row = parseCsvLine(line);
+                        
+                        try {
+                            CsvItem item = new CsvItem();
+                            item.setName(getValueByHeader(row, colMap, "name", ""));
+                            item.setPrice(Double.parseDouble(getValueByHeader(row, colMap, "price", "0.0")));
+                            item.setDomainCategory(getValueByHeader(row, colMap, "domain_category", "Shopping & products"));
+                            item.setRating(Double.parseDouble(getValueByHeader(row, colMap, "rating", "4.0")));
+                            item.setTags(getValueByHeader(row, colMap, "tags", ""));
+                            item.setDescription(getValueByHeader(row, colMap, "description", ""));
+                            item.setSubCategory(getValueByHeader(row, colMap, "sub_category", ""));
+                            item.setDietType(getValueByHeader(row, colMap, "diet_type", null));
+                            
+                            if (item.isValid()) {
+                                itemsToImport.add(item);
+                            } else {
+                                skippedRows++;
+                            }
+                        } catch (Exception ex) {
+                            skippedRows++;
+                        }
+                    }
+                    
+                    boolean success = false;
+                    if (!itemsToImport.isEmpty()) {
+                        success = analyticsDAO.addItemsBatch(itemsToImport);
+                    }
+                    
+                    final boolean finalSuccess = success;
+                    final int importedCount = itemsToImport.size();
+                    final int finalSkipped = skippedRows;
+                    
+                    SwingUtilities.invokeLater(() -> {
+                        progressDialog.dispose();
+                        if (finalSuccess || importedCount == 0) {
+                            JOptionPane.showMessageDialog(this, 
+                                "Import Complete!\nSuccessfully imported: " + importedCount + " items.\nSkipped rows: " + finalSkipped, 
+                                "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(this, 
+                                "Failed to insert items into database. Please check connection and logs.", 
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        refreshStats();
+                    });
+                    
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        progressDialog.dispose();
+                        JOptionPane.showMessageDialog(this, "Error parsing CSV: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    });
+                }
+            });
+            
+            progressDialog.setVisible(true);
+        }
+    }
+
+    private String getValueByHeader(List<String> row, Map<String, Integer> colMap, String columnName, String defaultValue) {
+        Integer index = colMap.get(columnName);
+        if (index != null && index < row.size()) {
+            String val = row.get(index);
+            return (val == null || val.isEmpty()) ? defaultValue : val;
+        }
+        return defaultValue;
+    }
+
+    private List<String> parseCsvLine(String line) {
+        List<String> values = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        boolean inQuotes = false;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuotes = !inQuotes;
+            } else if (c == ',' && !inQuotes) {
+                values.add(sb.toString().trim());
+                sb.setLength(0);
+            } else {
+                sb.append(c);
+            }
+        }
+        values.add(sb.toString().trim());
+        return values;
     }
 
     private void showAddItemDialog() {
@@ -76,7 +291,7 @@ public class AdminPanel extends JPanel {
         dialog.setLocationRelativeTo(this);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = new Insets(8, 12, 8, 12);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JTextField nameField = new JTextField(20);
@@ -95,28 +310,31 @@ public class AdminPanel extends JPanel {
 
         int row = 0;
         addFormField(dialog, "Name:", nameField, row++, gbc);
-        addFormField(dialog, "Price:", priceField, row++, gbc);
+        addFormField(dialog, "Price ($):", priceField, row++, gbc);
         addFormField(dialog, "Category:", categoryCombo, row++, gbc);
-        addFormField(dialog, "Rating:", ratingField, row++, gbc);
-        addFormField(dialog, "Tags (comma separated):", tagsField, row++, gbc);
+        addFormField(dialog, "Rating (1-5):", ratingField, row++, gbc);
+        addFormField(dialog, "Tags (comma list):", tagsField, row++, gbc);
         addFormField(dialog, "Description:", new JScrollPane(descArea), row++, gbc);
         addFormField(dialog, "Sub-Category:", subCatField, row++, gbc);
         addFormField(dialog, "Diet Type:", dietCombo, row++, gbc);
 
         JButton saveBtn = new JButton("Save to Database");
-        saveBtn.setBackground(Color.decode("#0891B2"));
+        saveBtn.setBackground(Color.decode("#059669"));
         saveBtn.setForeground(Color.WHITE);
+        saveBtn.setFont(new Font("Inter", Font.BOLD, 14));
+        saveBtn.setFocusPainted(false);
+        saveBtn.setOpaque(true);
         saveBtn.addActionListener(e -> {
             try {
                 String diet = dietCombo.getSelectedItem().equals("None") ? null : (String)dietCombo.getSelectedItem();
                 boolean success = analyticsDAO.addItem(
-                    nameField.getText(),
-                    Double.parseDouble(priceField.getText()),
+                    nameField.getText().trim(),
+                    Double.parseDouble(priceField.getText().trim()),
                     (String)categoryCombo.getSelectedItem(),
-                    Double.parseDouble(ratingField.getText()),
-                    tagsField.getText(),
-                    descArea.getText(),
-                    subCatField.getText(),
+                    Double.parseDouble(ratingField.getText().trim()),
+                    tagsField.getText().trim(),
+                    descArea.getText().trim(),
+                    subCatField.getText().trim(),
                     diet
                 );
 
@@ -125,15 +343,15 @@ public class AdminPanel extends JPanel {
                     dialog.dispose();
                     refreshStats();
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "Error adding item.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(dialog, "Error saving item to database.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(dialog, "Invalid input data: " + ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(dialog, "Invalid data input: " + ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2;
-        gbc.insets = new Insets(20, 10, 10, 10);
+        gbc.insets = new Insets(20, 12, 12, 12);
         dialog.add(saveBtn, gbc);
 
         dialog.setVisible(true);
@@ -141,19 +359,10 @@ public class AdminPanel extends JPanel {
 
     private void addFormField(JDialog dialog, String label, JComponent field, int row, GridBagConstraints gbc) {
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.3;
-        dialog.add(new JLabel(label), gbc);
+        JLabel lbl = new JLabel(label);
+        lbl.setFont(new Font("Inter", Font.BOLD, 12));
+        dialog.add(lbl, gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         dialog.add(field, gbc);
-    }
-
-    private void refreshStats() {
-        BackgroundThreadManager.getInstance().execute(() -> {
-            int users = analyticsDAO.getTotalUsers();
-            int items = analyticsDAO.getTotalItems();
-            SwingUtilities.invokeLater(() -> {
-                totalUsersLabel.setText("Total Users: " + users);
-                totalItemsLabel.setText("Total Items: " + items);
-            });
-        });
     }
 }
