@@ -24,19 +24,19 @@ public class AdminPanel extends JPanel {
     public AdminPanel() {
         this.analyticsDAO = new AnalyticsDAO();
         setLayout(new BorderLayout());
-        setBackground(Color.decode("#F1F5F9")); // Slate 100
+        setBackground(Color.decode("#051424")); // Obsidian Background
 
         // Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBackground(Color.decode("#010F1F")); // Surface Container Lowest
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#CBD5E1")),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#1C2B3C")),
             new EmptyBorder(20, 30, 20, 30)
         ));
 
         JLabel title = new JLabel("Admin Control Center");
         title.setFont(new Font("Inter", Font.BOLD, 24));
-        title.setForeground(Color.decode("#1E293B")); // Slate 800
+        title.setForeground(Color.decode("#D4E4FA")); // Light Blue/White
         headerPanel.add(title, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
@@ -45,9 +45,9 @@ public class AdminPanel extends JPanel {
         statsContainer.setOpaque(false);
         statsContainer.setBorder(new EmptyBorder(30, 30, 20, 30));
 
-        GlassCard usersCard = createStatsCard("Registered Users", totalUsersValLabel = new JLabel("0"), Color.decode("#6366F1"));
-        GlassCard itemsCard = createStatsCard("Total Recommendations", totalItemsValLabel = new JLabel("0"), Color.decode("#059669"));
-        GlassCard searchesCard = createStatsCard("Analytics Searches", totalSearchesValLabel = new JLabel("0"), Color.decode("#D97706"));
+        GlassCard usersCard = createStatsCard("Registered Users", totalUsersValLabel = new JLabel("0"), Color.decode("#38BDF8"));
+        GlassCard itemsCard = createStatsCard("Total Recommendations", totalItemsValLabel = new JLabel("0"), Color.decode("#BEF264"));
+        GlassCard searchesCard = createStatsCard("Analytics Searches", totalSearchesValLabel = new JLabel("0"), Color.decode("#F59E0B"));
 
         statsContainer.add(usersCard);
         statsContainer.add(itemsCard);
@@ -64,7 +64,7 @@ public class AdminPanel extends JPanel {
         leftActions.setOpaque(false);
 
         JButton refreshBtn = new JButton("Refresh Analytics");
-        styleActionButton(refreshBtn, Color.decode("#475569"), Color.WHITE);
+        styleActionButton(refreshBtn, Color.decode("#475569"), Color.decode("#D4E4FA"));
         refreshBtn.addActionListener(e -> refreshStats());
         leftActions.add(refreshBtn);
 
@@ -72,12 +72,12 @@ public class AdminPanel extends JPanel {
         rightActions.setOpaque(false);
 
         JButton bulkImportBtn = new JButton("Bulk Import CSV");
-        styleActionButton(bulkImportBtn, Color.decode("#2563EB"), Color.WHITE); // Royal Blue
+        styleActionButton(bulkImportBtn, Color.decode("#38BDF8"), Color.BLACK); // Cyber Blue
         bulkImportBtn.addActionListener(e -> triggerBulkImport());
         rightActions.add(bulkImportBtn);
 
         JButton addItemBtn = new JButton("Add Single Item +");
-        styleActionButton(addItemBtn, Color.decode("#059669"), Color.WHITE);
+        styleActionButton(addItemBtn, Color.decode("#BEF264"), Color.BLACK); // Electric Lime
         addItemBtn.addActionListener(e -> showAddItemDialog());
         rightActions.add(addItemBtn);
 
@@ -92,11 +92,11 @@ public class AdminPanel extends JPanel {
         GlassCard card = new GlassCard(16);
         card.setLayout(new BorderLayout(0, 10));
         card.setBorder(new EmptyBorder(25, 25, 25, 25));
-        card.setBackgroundColor(Color.WHITE);
+        card.setBackgroundColor(new Color(18, 33, 49, 130));
 
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("Inter", Font.BOLD, 14));
-        titleLabel.setForeground(Color.decode("#64748B")); // Slate 500
+        titleLabel.setForeground(Color.decode("#94A3B8")); // Slate 400
 
         valLabel.setFont(new Font("Inter", Font.BOLD, 36));
         valLabel.setForeground(color);
@@ -108,11 +108,11 @@ public class AdminPanel extends JPanel {
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                card.setBackgroundColor(Color.decode("#F8FAFC"));
+                card.setBackgroundColor(new Color(28, 43, 59, 185));
             }
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                card.setBackgroundColor(Color.WHITE);
+                card.setBackgroundColor(new Color(18, 33, 49, 130));
             }
         });
 
@@ -289,6 +289,7 @@ public class AdminPanel extends JPanel {
         dialog.setLayout(new GridBagLayout());
         dialog.setSize(500, 500);
         dialog.setLocationRelativeTo(this);
+        dialog.getContentPane().setBackground(Color.decode("#051424"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 12, 8, 12);
@@ -308,6 +309,27 @@ public class AdminPanel extends JPanel {
         JTextField subCatField = new JTextField();
         JComboBox<String> dietCombo = new JComboBox<>(new String[]{"None", "Veg", "Non-Veg"});
 
+        // Style Form Elements
+        JComponent[] textComponents = {nameField, priceField, ratingField, tagsField, descArea, subCatField};
+        for (JComponent tc : textComponents) {
+            tc.setBackground(new Color(18, 33, 49));
+            tc.setForeground(Color.decode("#D4E4FA"));
+            tc.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.decode("#1C2B3C"), 1),
+                BorderFactory.createEmptyBorder(5, 8, 5, 8)
+            ));
+            if (tc instanceof JTextField) {
+                ((JTextField) tc).setCaretColor(Color.decode("#D4E4FA"));
+            } else if (tc instanceof JTextArea) {
+                ((JTextArea) tc).setCaretColor(Color.decode("#D4E4FA"));
+            }
+        }
+        
+        categoryCombo.setBackground(new Color(18, 33, 49));
+        categoryCombo.setForeground(Color.decode("#D4E4FA"));
+        dietCombo.setBackground(new Color(18, 33, 49));
+        dietCombo.setForeground(Color.decode("#D4E4FA"));
+
         int row = 0;
         addFormField(dialog, "Name:", nameField, row++, gbc);
         addFormField(dialog, "Price ($):", priceField, row++, gbc);
@@ -319,11 +341,12 @@ public class AdminPanel extends JPanel {
         addFormField(dialog, "Diet Type:", dietCombo, row++, gbc);
 
         JButton saveBtn = new JButton("Save to Database");
-        saveBtn.setBackground(Color.decode("#059669"));
-        saveBtn.setForeground(Color.WHITE);
+        saveBtn.setBackground(Color.decode("#BEF264")); // Electric Lime
+        saveBtn.setForeground(Color.BLACK);
         saveBtn.setFont(new Font("Inter", Font.BOLD, 14));
         saveBtn.setFocusPainted(false);
         saveBtn.setOpaque(true);
+        saveBtn.setBorderPainted(false);
         saveBtn.addActionListener(e -> {
             try {
                 String diet = dietCombo.getSelectedItem().equals("None") ? null : (String)dietCombo.getSelectedItem();
@@ -361,6 +384,7 @@ public class AdminPanel extends JPanel {
         gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0.3;
         JLabel lbl = new JLabel(label);
         lbl.setFont(new Font("Inter", Font.BOLD, 12));
+        lbl.setForeground(Color.decode("#D4E4FA")); // Light text color
         dialog.add(lbl, gbc);
         gbc.gridx = 1; gbc.weightx = 0.7;
         dialog.add(field, gbc);

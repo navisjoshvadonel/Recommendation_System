@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GKN shopy | Atmospheric Commerce Hub</title>
+    <!-- Tailwind CSS with standard configuration -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- Three.js for 3D visual effects in Shop AI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#00668a",
+                        "surface-container-low": "#0d1c2d",
+                        "on-secondary": "#233600",
+                        "on-tertiary-fixed": "#131b2e",
+                        "surface-variant": "#273647",
+                        "tertiary-fixed": "#dae2fd",
+                        "on-primary-container": "#004965",
+                        "surface": "#051424",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#131f00",
+                        "primary-container": "#38bdf8",
+                        "outline-variant": "#3e484f",
+                        "secondary-fixed-dim": "#a4d64c",
+                        "primary-fixed": "#c4e7ff",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "primary-fixed-dim": "#7bd0ff",
+                        "on-primary": "#00354a",
+                        "on-primary-fixed-variant": "#004c69",
+                        "surface-container": "#122131",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#010f1f",
+                        "surface-bright": "#2c3a4c",
+                        "inverse-on-surface": "#233143",
+                        "on-secondary-container": "#1e2f00",
+                        "on-surface": "#d4e4fa",
+                        "secondary-fixed": "#bff365",
+                        "secondary": "#a4d64c",
+                        "surface-container-high": "#1c2b3c",
+                        "secondary-container": "#719e13",
+                        "primary": "#8ed5ff",
+                        "background": "#051424",
+                        "tertiary": "#c5cce6",
+                        "outline": "#87929a",
+                        "on-tertiary-container": "#3c4459",
+                        "on-secondary-fixed-variant": "#354e00",
+                        "on-surface-variant": "#bdc8d1",
+                        "tertiary-container": "#a9b1ca",
+                        "on-tertiary": "#283044",
+                        "surface-dim": "#051424",
+                        "inverse-surface": "#d4e4fa",
+                        "surface-tint": "#7bd0ff",
+                        "surface-container-highest": "#273647",
+                        "on-primary-fixed": "#001e2c",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "on-background": "#d4e4fa"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "button": ["Plus Jakarta Sans"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "label-mono": ["Space Mono"],
+                        "body-md": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { background-color: #020617; color: #d4e4fa; overflow-x: hidden; }
+        .glass-card {
+            background: rgba(39, 54, 71, 0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(142, 213, 255, 0.3);
+            background: rgba(39, 54, 71, 0.55);
+            box-shadow: 0 0 25px rgba(142, 213, 255, 0.15);
+        }
+        .solar-border {
+            border: 1px solid transparent;
+            background: linear-gradient(rgba(39, 54, 71, 0.3), rgba(39, 54, 71, 0.3)) padding-box,
+                        linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 60%) border-box;
+        }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .text-glow-blue { text-shadow: 0 0 10px rgba(142, 213, 255, 0.6); }
+        .text-glow-lime { text-shadow: 0 0 10px rgba(164, 214, 76, 0.6); }
+        .hidden { display: none !important; }
+        .active-nav-line {
+            position: relative;
+        }
+        .active-nav-line::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #8ed5ff;
+            box-shadow: 0 0 8px #8ed5ff;
+        }
+        /* Custom scrollbar for chat log and list containers */
+        .glass-scroll::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .glass-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .glass-scroll::-webkit-scrollbar-thumb {
+            background: #8ed5ff;
+            border-radius: 999px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary/30 antialiased">
+
+    <!-- Global Background WebGL Canvas (Atmospheric shader backdrop) -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 w-full h-full opacity-60">
+            <canvas id="shader-canvas-ANIMATION" style="display:block;width:100%;height:100%"></canvas>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background"></div>
+    </div>
+
+    <!-- Global Navigation Header (TopAppBar) -->
+    <nav id="top-nav" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-[90%] z-50 rounded-xl border border-white/10 bg-surface-variant/40 backdrop-blur-xl flex justify-between items-center px-8 py-3.5 shadow-[0_0_20px_rgba(142,213,255,0.15)] transition-all duration-300">
+        <div class="flex items-center gap-6">
+            <span onclick="app.showScreen('dashboard')" class="text-2xl font-headline-md font-bold tracking-tight text-white text-glow-blue cursor-pointer select-none">GKN shopy</span>
+            <div class="h-6 w-px bg-white/10"></div>
+            <div class="flex gap-4">
+                <button onclick="app.showScreen('dashboard')" class="nav-tab text-sm font-button text-on-surface hover:text-primary transition-colors active-nav-line" id="tab-curated">Curated</button>
+                <button onclick="app.showScreen('shop-ai')" class="nav-tab text-sm font-button text-on-surface-variant hover:text-primary transition-colors" id="tab-ai">AI Shop</button>
+                <button onclick="app.showScreen('wallet-track')" class="nav-tab text-sm font-button text-on-surface-variant hover:text-primary transition-colors" id="tab-wallet">Wallet</button>
+                <button id="nav-admin-btn" onclick="app.showScreen('admin')" class="hidden nav-tab text-sm font-button text-on-surface-variant hover:text-primary transition-colors" id="tab-admin">Admin Panel</button>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Search bar -->
+            <div class="relative w-60 group">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-hover:text-primary transition-colors z-10 pointer-events-none">search</span>
+                <input id="nav-search-input" class="w-full h-9 pl-9 pr-4 bg-surface-container-high/50 border border-outline-variant/30 rounded-full text-xs focus:outline-none focus:border-primary/50 focus:bg-surface-container-high focus:ring-1 focus:ring-primary/50 transition-all text-on-surface placeholder:text-outline" placeholder="Search universe..." type="text"/>
+            </div>
+            
+            <!-- Quick actions -->
+            <button onclick="app.showScreen('wallet-track')" class="p-2 rounded-full hover:bg-white/5 text-primary transition-colors hover:text-white" title="Wallet">
+                <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+            </button>
+            
+            <button onclick="app.logout()" class="p-2 rounded-full hover:bg-white/5 text-on-surface-variant hover:text-error transition-colors" title="Logout">
+                <span class="material-symbols-outlined text-[20px]">logout</span>
+            </button>
+
+            <!-- User profile image -->
+            <div class="w-9 h-9 rounded-full border border-primary/40 overflow-hidden shadow-[0_0_8px_rgba(142,213,255,0.4)]">
+                <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVUuRjs-raIKBV6r97wtVf0iYPx1ZmDcDQ2F7nnKsylPhyKr970tVkZx6PxfgbE6YtAg65xOs3GGohisy4SkdYIeuS2D14R3JdVNlpupaA8U5XxQraXMkDKNC6dwf1L2z1sUXh21ofXptnBZhWZN6gHI-XRRZi1fSYxVdDiaETN4XAwHqreW9eisFZrfIoE23jR1pM09oF_ji3NFk_r1c-uQYZI3ak0spAuXe0uJWhXnxSyZBJWqDKD1kT9ArHRaorx6k7TuBSlbE"/>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation (Desktop only, slides to left) -->
+    <aside id="side-nav" class="hidden lg:flex fixed left-0 top-0 h-full w-64 border-r border-white/5 bg-surface/60 backdrop-blur-2xl flex-col py-32 gap-8 z-40">
+        <div class="px-8 mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_#38bdf8]"></div>
+                <h2 class="font-headline-md text-headline-md text-on-surface font-bold">Menu</h2>
+            </div>
+            <p class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">GKN Atmospheric</p>
+        </div>
+        <nav class="flex flex-col gap-1 select-none">
+            <button onclick="app.showScreen('dashboard')" class="sidebar-item flex items-center gap-4 text-primary bg-primary/10 border-l-4 border-primary pl-7 py-3 transition-all" id="side-discover">
+                <span class="material-symbols-outlined text-[20px]">explore</span>
+                <span class="font-label-mono text-xs">Discovery</span>
+            </button>
+            <button onclick="app.showScreen('feed')" class="sidebar-item flex items-center gap-4 text-on-surface-variant pl-8 py-3 hover:bg-white/5 hover:text-white transition-all" id="side-feed">
+                <span class="material-symbols-outlined text-[20px]">motion_photos_on</span>
+                <span class="font-label-mono text-xs">Feed</span>
+            </button>
+            <button onclick="app.showScreen('shop-ai')" class="sidebar-item flex items-center gap-4 text-on-surface-variant pl-8 py-3 hover:bg-white/5 hover:text-white transition-all" id="side-ai">
+                <span class="material-symbols-outlined text-[20px]">psychology</span>
+                <span class="font-label-mono text-xs">Shop AI</span>
+            </button>
+            <button onclick="app.showScreen('wallet-track')" class="sidebar-item flex items-center gap-4 text-on-surface-variant pl-8 py-3 hover:bg-white/5 hover:text-white transition-all" id="side-wallet">
+                <span class="material-symbols-outlined text-[20px]">payments</span>
+                <span class="font-label-mono text-xs">Wallet & Track</span>
+            </button>
+            <button id="side-admin-btn" onclick="app.showScreen('admin')" class="hidden sidebar-item flex items-center gap-4 text-on-surface-variant pl-8 py-3 hover:bg-white/5 hover:text-white transition-all" id="side-admin">
+                <span class="material-symbols-outlined text-[20px]">analytics</span>
+                <span class="font-label-mono text-xs">Analytics</span>
+            </button>
+        </nav>
+        <div class="mt-auto px-6">
+            <div class="glass-card p-4 rounded-xl solar-border">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="material-symbols-outlined text-secondary text-sm">electric_bolt</span>
+                    <span class="font-label-mono text-[10px] text-white">SHOP CASH</span>
+                </div>
+                <div class="font-label-mono text-secondary font-bold text-sm text-glow-lime mb-3">$1,248.50</div>
+                <button onclick="app.showScreen('wallet-track')" class="w-full bg-secondary text-on-secondary font-button text-xs py-2 rounded-lg hover:shadow-[0_0_12px_rgba(164,214,76,0.5)] transition-all">Redeem</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Screens Shell -->
+    <div id="main-content-shell" class="min-h-screen relative z-10 transition-all duration-300">
+        
+        <!-- Screen: Auth (Login/Register Card) -->
+        <div id="screen-auth" class="flex min-h-screen items-center justify-center p-8">
+            <div class="glass-card w-full max-w-md rounded-3xl p-8 border-t border-l border-white/20 shadow-2xl animate-float">
+                <h1 class="text-4xl font-display-lg font-bold text-white text-center mb-2 text-glow-blue tracking-tighter">GKN shopy</h1>
+                <p class="text-outline text-center mb-8 font-label-mono text-[11px] tracking-wider uppercase">Atmospheric Commerce Hub</p>
+                
+                <!-- Toggle Form Tabs -->
+                <div class="flex gap-2 p-1 bg-surface-container-lowest/80 rounded-xl mb-6">
+                    <button id="auth-tab-login" onclick="app.toggleAuthForm('login')" class="flex-1 py-2 font-button text-xs rounded-lg bg-surface-container-high text-white transition-all">Sign In</button>
+                    <button id="auth-tab-register" onclick="app.toggleAuthForm('register')" class="flex-1 py-2 font-button text-xs rounded-lg text-on-surface-variant hover:text-white transition-all">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="space-y-4" onsubmit="event.preventDefault(); app.login();">
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Username</label>
+                        <input id="login-user" type="text" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-sm font-label-mono" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Password</label>
+                        <input id="login-pass" type="password" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-sm font-label-mono" required>
+                    </div>
+                    <button type="submit" class="w-full mt-6 bg-primary text-on-primary font-button py-3.5 rounded-xl hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(142,213,255,0.4)] text-sm uppercase tracking-wider">
+                        Initialize Sequence
+                    </button>
+                    <p id="login-error" class="text-error text-xs text-center mt-2 hidden font-label-mono"></p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="space-y-4 hidden" onsubmit="event.preventDefault(); app.register();">
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Username</label>
+                        <input id="reg-user" type="text" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors text-sm font-label-mono" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Email Address</label>
+                        <input id="reg-email" type="email" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors text-sm font-label-mono" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Password</label>
+                        <input id="reg-pass" type="password" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary transition-colors text-sm font-label-mono" required>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Budget Pref</label>
+                            <select id="reg-budget" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-2 py-2.5 text-white focus:outline-none focus:border-primary text-xs font-label-mono">
+                                <option value="Any">Any Budget</option>
+                                <option value="Budget-Friendly">Low Price</option>
+                                <option value="Premium">High Price</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-1">Diet Pref</label>
+                            <select id="reg-diet" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-2 py-2.5 text-white focus:outline-none focus:border-primary text-xs font-label-mono">
+                                <option value="Any">No Diet</option>
+                                <option value="Vegan">Vegan</option>
+                                <option value="Vegetarian">Vegetarian</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-6 bg-secondary text-on-secondary font-button py-3.5 rounded-xl hover:bg-secondary/90 transition-colors shadow-[0_0_15px_rgba(164,214,76,0.4)] text-sm uppercase tracking-wider">
+                        Create Account
+                    </button>
+                    <p id="register-error" class="text-error text-xs text-center mt-2 hidden font-label-mono"></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Screen: Dashboard (Discovery Bento Grid) -->
+        <div id="screen-dashboard" class="hidden min-h-screen pt-32 pb-16 px-6 lg:pl-80 max-w-[1500px] mx-auto">
+            <div class="flex justify-between items-end mb-8 flex-wrap gap-4">
+                <div>
+                    <h2 class="text-3xl font-display-lg font-bold text-white tracking-tight">Recommended Entities</h2>
+                    <p class="text-outline text-sm font-label-mono uppercase tracking-widest mt-1">Based on style coordinate vectors</p>
+                </div>
+                <div class="flex gap-4">
+                    <select id="domain-filter" onchange="app.performSearch()" class="bg-surface-container-high/60 border border-outline-variant/30 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-primary appearance-none cursor-pointer font-label-mono">
+                        <option value="All">All Domains</option>
+                        <option value="Electronics & Tech">Electronics & Tech</option>
+                        <option value="Shopping & products">Shopping & products</option>
+                        <option value="Food & Dining">Food & Dining</option>
+                        <option value="Entertainment & Media">Entertainment & Media</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mb-6 flex gap-2 flex-wrap items-center" id="recent-searches">
+                <!-- Recent search badges dynamically loaded -->
+            </div>
+
+            <!-- Bento-style grid results -->
+            <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Dynamic cards populated by app.js -->
+            </div>
+        </div>
+
+        <!-- Screen: Feed / Collections -->
+        <div id="screen-feed" class="hidden min-h-screen pt-32 pb-16 px-6 lg:pl-80 max-w-[1500px] mx-auto">
+            <div class="mb-8">
+                <h2 class="text-3xl font-display-lg font-bold text-white tracking-tight">Curated Collections</h2>
+                <p class="text-outline text-sm font-label-mono uppercase tracking-widest mt-1">Atmospheric drops & blockchain-verified releases</p>
+            </div>
+            
+            <!-- Category row -->
+            <div class="flex gap-3 mb-10 overflow-x-auto pb-2 glass-scroll">
+                <button class="px-5 py-2 rounded-full text-xs font-label-mono bg-primary text-on-primary font-bold">ALL DROPS</button>
+                <button class="px-5 py-2 rounded-full text-xs font-label-mono glass-card text-on-surface hover:bg-white/5">LIMITED RELEASES</button>
+                <button class="px-5 py-2 rounded-full text-xs font-label-mono glass-card text-on-surface hover:bg-white/5">BLOCKCHAIN VERIFIED</button>
+                <button class="px-5 py-2 rounded-full text-xs font-label-mono glass-card text-on-surface hover:bg-white/5">MINIMALIST APPAREL</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Live Discovery Feed (Col 1-4) -->
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <div class="glass-card p-6 rounded-3xl h-[600px] flex flex-col relative overflow-hidden solar-border">
+                        <h3 class="font-headline-md text-headline-md text-white mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">play_circle</span>
+                            Live Discovery
+                        </h3>
+                        <div class="flex-grow flex flex-col gap-5 overflow-y-auto glass-scroll pr-2">
+                            <!-- Static high-end media collections for visual polish -->
+                            <div class="group relative rounded-2xl overflow-hidden aspect-[9/16] shrink-0 border border-white/5">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa73TM-HtQrYzjyGOk8im9AhauGtWwnVuDfKYSOod0-pdFB4CQIcvmxIemaxlVLCqrWCV0zfnAfr9-_q8LneB4sd19XeR_Mv7cnpHo1rQd3hpo7KCuvbPjKmNVrK7x4klGfn6ZdiaDthGGpu8UKiIGrfJ-YAHTPfmK03meJW4kluPZHh28tobfhlJ-VYAgJjps7jd3nCHMz3HwFDQv7b38IVsPTRsQHjGFUkLfJqqgHqc2am1fXh92Pb4GXgprKf5KjljUNLjFK68"/>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+                                    <span class="font-label-mono text-[10px] text-secondary mb-1">LIVE NOW</span>
+                                    <div class="font-button text-white text-sm">Deep Space Series Drop</div>
+                                </div>
+                            </div>
+                            <div class="group relative rounded-2xl overflow-hidden aspect-[9/16] shrink-0 border border-white/5">
+                                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtSRSamhUCEKX9mn6SCE6tC5iAsDfjT0v-Vqy2kq9b-PnRswLGF54cgWkhhMguCh0Fv2EjvhuoOobfHjqV77Yk7qB4VjhDKoTZMGUEWjnV3Zjea9fPe-9TDAFkGwReAo_tHuK9xnQzEtm8WRUaTtZ1mVtodoD7cp9HnwA0B_1EcFv7hcgtqAK2hcOVt-9--cRQ55O3sIKPQE0N0VfS8nYQdwdvkhBLh1Yg5lMLDJwiLkptK3FJdm1Z1cqFe_jaYIK4XWBZ7n63lPw"/>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-4">
+                                    <span class="font-label-mono text-[10px] text-primary mb-1">CURATED</span>
+                                    <div class="font-button text-white text-sm">Iridescent Home Concepts</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Curated Collections Feed (Col 5-12) -->
+                <div class="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6" id="collections-grid">
+                    <!-- Cards will be populated here dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen: Shop AI (3D Core Interactive Chatbot) -->
+        <div id="screen-shop-ai" class="hidden min-h-screen pt-32 pb-16 px-6 lg:pl-80 max-w-[1500px] mx-auto">
+            <div class="relative w-full flex flex-col items-center">
+                <!-- 3D core canvas element container -->
+                <div class="w-full h-64 md:h-80 flex items-center justify-center relative overflow-hidden rounded-3xl mb-8 border border-white/5 bg-gradient-to-b from-surface-container-low/20 to-transparent">
+                    <div id="threejs-container-ANIMATION" class="absolute inset-0 w-full h-full opacity-70"></div>
+                    <div class="relative z-10 text-center pointer-events-none">
+                        <h1 class="font-display-lg text-display-lg text-white mb-2 text-glow-blue tracking-tighter">AI Fashion Hub</h1>
+                        <p class="font-label-mono text-xs text-secondary uppercase tracking-[0.2em]">Atmospheric Synergy Synthesizer</p>
+                    </div>
+                </div>
+
+                <!-- Chat Box Wrapper -->
+                <div class="w-full max-w-3xl bg-surface-container/60 backdrop-blur-3xl border border-white/5 rounded-3xl p-6 shadow-2xl relative">
+                    <!-- Scrollable Log -->
+                    <div id="ai-chat-log" class="h-[300px] overflow-y-auto pr-2 mb-4 glass-scroll flex flex-col gap-4">
+                        <div class="flex gap-4 items-start">
+                            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/20">
+                                <span class="material-symbols-outlined text-primary text-[18px]">psychology</span>
+                            </div>
+                            <div class="max-w-[80%]">
+                                <p class="font-body-md text-sm text-on-surface bg-white/5 p-3.5 rounded-2xl rounded-tl-none leading-relaxed">
+                                    Awaiting input sequence. Tell me your budget, category, or style preferences and I will query the database to extract the optimal candidates.
+                                </p>
+                                <span class="font-label-mono text-[9px] text-on-surface-variant mt-1 block tracking-wider">ASSISTANT · LOG INITIALIZED</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Bar -->
+                    <form id="ai-chat-form" onsubmit="event.preventDefault(); app.sendAiMessage();" class="relative">
+                        <input id="ai-chat-input" class="w-full bg-surface-container-highest/50 border-0 border-b-2 border-white/10 text-on-surface font-label-mono py-4 pl-4 pr-16 focus:ring-0 focus:border-primary transition-all text-sm placeholder:text-outline" placeholder="Ask AI Shop assistant..." type="text"/>
+                        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_15px_rgba(142,213,255,0.4)]">
+                            <span class="material-symbols-outlined text-[20px]">north_east</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen: Wallet & Track -->
+        <div id="screen-wallet-track" class="hidden min-h-screen pt-32 pb-16 px-6 lg:pl-80 max-w-[1500px] mx-auto">
+            <div class="mb-8">
+                <h2 class="text-3xl font-display-lg font-bold text-white tracking-tight">Financial Ledger &amp; Live Tracking</h2>
+                <p class="text-outline text-sm font-label-mono uppercase tracking-widest mt-1">Real-time ledger updates & order coordinates</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left column: Wallet and Quick Actions (Col 1-4) -->
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    <div class="glass-card p-8 rounded-3xl flex flex-col items-center justify-center text-center group">
+                        <div class="p-3 bg-secondary-container rounded-2xl mb-4 group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(113,158,19,0.3)] border border-secondary/20">
+                            <span class="material-symbols-outlined text-on-secondary-container text-4xl" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                        </div>
+                        <h2 class="font-label-mono text-on-surface-variant text-xs uppercase tracking-[0.2em] mb-2">Available Balance</h2>
+                        <div class="font-display-lg text-3xl text-secondary text-glow-lime mb-4">$1,248.50</div>
+                        <div class="flex gap-3 w-full">
+                            <button onclick="alert('Transaction processing...')" class="flex-1 bg-secondary text-on-secondary font-button text-xs py-3 rounded-xl hover:shadow-[0_0_20px_rgba(164,214,76,0.4)] transition-all">Redeem</button>
+                            <button onclick="alert('Redeem history logged in ledger')" class="flex-1 border border-secondary text-secondary font-button text-xs py-3 rounded-xl hover:bg-secondary/10 transition-all">History</button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-3xl flex-1 flex flex-col">
+                        <h3 class="font-headline-md text-primary text-base font-bold mb-4">Quick Actions</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div onclick="alert('Top up module initialized')" class="p-4 bg-surface-container rounded-2xl border border-white/5 hover:border-primary/40 cursor-pointer transition-all flex flex-col gap-2">
+                                <span class="material-symbols-outlined text-primary">add_circle</span>
+                                <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider">Top Up</span>
+                            </div>
+                            <div onclick="alert('Transfer sequence initialized')" class="p-4 bg-surface-container rounded-2xl border border-white/5 hover:border-primary/40 cursor-pointer transition-all flex flex-col gap-2">
+                                <span class="material-symbols-outlined text-primary">send</span>
+                                <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider">Transfer</span>
+                            </div>
+                            <div onclick="alert('QR code scanning initiated')" class="p-4 bg-surface-container rounded-2xl border border-white/5 hover:border-primary/40 cursor-pointer transition-all flex flex-col gap-2">
+                                <span class="material-symbols-outlined text-primary">qr_code_2</span>
+                                <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider">Scan Pay</span>
+                            </div>
+                            <div onclick="alert('Analytics insights synchronizing...')" class="p-4 bg-surface-container rounded-2xl border border-white/5 hover:border-primary/40 cursor-pointer transition-all flex flex-col gap-2">
+                                <span class="material-symbols-outlined text-primary">analytics</span>
+                                <span class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider">Insight</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right column: Route tracking and transaction ledger (Col 5-12) -->
+                <div class="lg:col-span-8 flex flex-col gap-6">
+                    <div class="glass-card h-[400px] rounded-3xl relative p-0 overflow-hidden group">
+                        <!-- Header Overlay -->
+                        <div class="absolute top-6 left-6 right-6 z-20 flex justify-between items-start">
+                            <div class="bg-surface/80 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                                <div class="font-label-mono text-primary text-[9px] uppercase tracking-widest mb-1">Incoming Delivery</div>
+                                <div class="font-headline-md text-lg text-white">Order #GKN-8829</div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></div>
+                                    <span class="font-body-md text-xs text-on-surface-variant">Arriving in 14 mins</span>
+                                </div>
+                            </div>
+                            <button onclick="alert('GPS telemetry synchronized')" class="bg-primary text-on-primary font-button text-xs px-5 py-2 rounded-full hover:shadow-[0_0_12px_rgba(56,189,248,0.5)] transition-all">Live Tracking</button>
+                        </div>
+                        
+                        <!-- Simulated Vector Map -->
+                        <div class="absolute inset-0 z-0 bg-[#020617]">
+                            <!-- Animated Map Overlay -->
+                            <div class="absolute inset-0 opacity-30 mix-blend-screen bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCe21xIr20wS2adfdsLy7ZeQDFT0hF8lfnEv3W4BpbiDij5C-luTbCDDUdMUJEf7R9q3t9WlZuanowVwXEaqEuzIMkTKAnA_Jmy7F6OB-If8tVCSZU8RVE3onc1w2JupIPjYAZYKePzvxrr4FjEnZBvRwpBSiFc2zVWvKetebAw69AValUFvSja6bClCqw8jDdCKQ-OQXvnJJVSGisZaAbdPCVjKN_2yMsBr9T9QAGu63TliCGlcAfB3avGC2v1SjJUTcFIw_zKaa4')"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent opacity-80"></div>
+                            
+                            <svg class="absolute inset-0 w-full h-full z-10" preserveAspectRatio="none" viewBox="0 0 800 500">
+                                <path class="opacity-30" d="M100 400 Q 200 350, 300 380 T 500 320 T 700 150" fill="none" stroke="#8ed5ff" stroke-width="2" stroke-dasharray="8 4">
+                                    <animate attributeName="stroke-dashoffset" dur="10s" from="100" to="0" repeatCount="indefinite" />
+                                </path>
+                                <path d="M100 400 Q 200 350, 300 380 T 500 320 T 580 240" fill="none" stroke="#8ed5ff" stroke-width="4" stroke-linecap="round">
+                                    <animate attributeName="stroke-dashoffset" dur="5s" from="500" to="0" repeatCount="indefinite" />
+                                </path>
+                                <circle cx="100" cy="400" fill="#8ed5ff" r="6" class="animate-pulse" />
+                                <circle cx="580" cy="240" fill="#a4d64c" r="8" />
+                                <g transform="translate(580, 240)">
+                                    <circle fill="rgba(142, 213, 255, 0.1)" r="20" stroke="rgba(142, 213, 255, 0.5)" stroke-width="1"></circle>
+                                    <text fill="#8ed5ff" font-family="Material Symbols Outlined" font-size="24" x="-12" y="8">local_shipping</text>
+                                </g>
+                            </svg>
+                        </div>
+
+                        <!-- Floating Route Details -->
+                        <div class="absolute bottom-6 left-6 right-6 z-20 grid grid-cols-3 gap-4">
+                            <div class="bg-surface/80 backdrop-blur-md p-3.5 rounded-2xl border border-white/5">
+                                <div class="font-label-mono text-[9px] text-on-surface-variant uppercase">Status</div>
+                                <div class="font-body-md font-bold text-xs text-secondary mt-0.5">Out for Delivery</div>
+                            </div>
+                            <div class="bg-surface/80 backdrop-blur-md p-3.5 rounded-2xl border border-white/5">
+                                <div class="font-label-mono text-[9px] text-on-surface-variant uppercase">Current Location</div>
+                                <div class="font-body-md font-bold text-xs text-white mt-0.5">Shibuya, Tokyo</div>
+                            </div>
+                            <div class="bg-surface/80 backdrop-blur-md p-3.5 rounded-2xl border border-white/5">
+                                <div class="font-label-mono text-[9px] text-on-surface-variant uppercase">Carrier</div>
+                                <div class="font-body-md font-bold text-xs text-white mt-0.5">Quantum Express</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Ledger Table -->
+                <div class="lg:col-span-12">
+                    <div class="glass-card rounded-3xl p-6">
+                        <div class="flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+                            <div>
+                                <h3 class="font-headline-md text-xl text-white">Ledger &amp; History</h3>
+                                <p class="font-label-mono text-[10px] text-on-surface-variant uppercase tracking-wider">Real-time Transaction Stream</p>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto glass-scroll pb-2">
+                            <table class="w-full text-left font-label-mono text-xs">
+                                <thead>
+                                    <tr class="text-on-surface-variant text-[10px] uppercase tracking-widest border-b border-white/5">
+                                        <th class="pb-3 font-medium">Transaction ID</th>
+                                        <th class="pb-3 font-medium">Recipient / Entity</th>
+                                        <th class="pb-3 font-medium">Category</th>
+                                        <th class="pb-3 font-medium">Timestamp</th>
+                                        <th class="pb-3 font-medium text-right">Amount</th>
+                                        <th class="pb-3 font-medium text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-white/5">
+                                    <tr class="group hover:bg-primary/5 transition-colors">
+                                        <td class="py-4 text-primary text-xs">TXN-998-ALPHA</td>
+                                        <td class="py-4 font-body-md text-white">GKN Futuristic Sneakers Drop</td>
+                                        <td class="py-4 text-on-surface-variant">Apparel</td>
+                                        <td class="py-4 text-on-surface-variant">2026.06.23 14:22:01</td>
+                                        <td class="py-4 text-right text-white font-bold">-$299.00</td>
+                                        <td class="py-4 text-right">
+                                            <span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded text-[10px] uppercase border border-secondary/20 font-bold">Finalized</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="group hover:bg-primary/5 transition-colors">
+                                        <td class="py-4 text-primary text-xs">TXN-421-BETA</td>
+                                        <td class="py-4 font-body-md text-white">System Cashback Balance</td>
+                                        <td class="py-4 text-on-surface-variant">Rewards</td>
+                                        <td class="py-4 text-on-surface-variant">2026.06.23 09:45:12</td>
+                                        <td class="py-4 text-right text-secondary font-bold">+$12.45</td>
+                                        <td class="py-4 text-right">
+                                            <span class="bg-secondary/10 text-secondary px-2 py-0.5 rounded text-[10px] uppercase border border-secondary/20 font-bold">Finalized</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="group hover:bg-primary/5 transition-colors">
+                                        <td class="py-4 text-primary text-xs">TXN-105-GAMMA</td>
+                                        <td class="py-4 font-body-md text-white">Orbital Smart Lume Lamp</td>
+                                        <td class="py-4 text-on-surface-variant">Tech</td>
+                                        <td class="py-4 text-on-surface-variant">2026.06.22 18:30:44</td>
+                                        <td class="py-4 text-right text-white font-bold">-$145.00</td>
+                                        <td class="py-4 text-right">
+                                            <span class="bg-primary/10 text-primary px-2 py-0.5 rounded text-[10px] uppercase border border-primary/20 font-bold">Processing</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen: Admin (Metrics Analytics Dashboard) -->
+        <div id="screen-admin" class="hidden min-h-screen pt-32 pb-16 px-6 lg:pl-80 max-w-[1500px] mx-auto">
+            <h2 class="text-3xl font-display-lg font-bold text-white mb-8 tracking-tight">System Analytics</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-primary/45">
+                    <p class="text-outline text-xs font-label-mono uppercase tracking-wider mb-2">Total Users</p>
+                    <p id="stat-users" class="text-4xl font-headline-md text-white font-bold">--</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-secondary/45">
+                    <p class="text-outline text-xs font-label-mono uppercase tracking-wider mb-2">Total Entities Ingested</p>
+                    <p id="stat-items" class="text-4xl font-headline-md text-white font-bold">--</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 border-l-4 border-white/20">
+                    <p class="text-outline text-xs font-label-mono uppercase tracking-wider mb-2">Total Search telemetry queries</p>
+                    <p id="stat-searches" class="text-4xl font-headline-md text-white font-bold">--</p>
+                </div>
+            </div>
+            
+            <!-- Ingestion module -->
+            <div class="glass-card rounded-3xl p-8 border border-white/5">
+                <h3 class="font-headline-md text-xl mb-3 text-white">Atmospheric Data Ingestion</h3>
+                <p class="text-on-surface-variant text-sm mb-6 max-w-xl">
+                    Import large scale product catalog CSV files containing domain categories, ratings, tags, and prices into the database storage.
+                </p>
+                
+                <div class="flex flex-col gap-4 max-w-md">
+                    <div>
+                        <label class="block text-xs font-label-mono text-on-surface-variant uppercase tracking-wider mb-2">Dataset File Path</label>
+                        <input id="admin-csv-path" type="text" placeholder="e.g. Dataset/Shopping.csv" class="w-full bg-surface-container-high/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary text-sm font-label-mono">
+                    </div>
+                    <button onclick="app.importCsv()" class="bg-primary text-on-primary font-button text-xs py-3.5 rounded-xl hover:shadow-[0_0_15px_rgba(56,189,248,0.4)] transition-all uppercase tracking-wider">
+                        Execute CSV Import Sequence
+                    </button>
+                    <p id="import-status" class="text-xs font-label-mono text-center mt-2 hidden"></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application state and page router logic -->
+    <script src="app.js"></script>
+
+    <!-- WebGL particle shader script -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('shader-canvas-ANIMATION');
+            function syncSize() {
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                if (canvas.width !== w || canvas.height !== h) {
+                    canvas.width = w;
+                    canvas.height = h;
+                }
+            }
+            window.addEventListener('resize', syncSize);
+            syncSize();
+
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return;
+            
+            const vs = `
+                attribute vec2 a_position;
+                varying vec2 v_texCoord;
+                void main() {
+                    v_texCoord = a_position * 0.5 + 0.5;
+                    gl_Position = vec4(a_position, 0.0, 1.0);
+                }
+            `;
+            
+            const fs = `
+                precision highp float;
+                uniform float u_time;
+                uniform vec2 u_resolution;
+                uniform vec2 u_mouse;
+
+                void main() {
+                    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+                    vec2 mouse = u_mouse / u_resolution.xy;
+                    
+                    // Create dark deep space obsidian base
+                    vec3 color1 = vec3(0.007, 0.023, 0.078); // #020617
+                    vec3 color2 = vec3(0.05, 0.09, 0.16);
+                    
+                    // Moving stars noise
+                    float star = sin(uv.x * 20.0 + u_time * 0.1) * cos(uv.y * 15.0 - u_time * 0.1);
+                    star += sin(uv.y * 30.0 + u_time * 0.3) * cos(uv.x * 25.0 + u_time * 0.2);
+                    
+                    vec3 baseColor = mix(color1, color2, uv.y + star * 0.08);
+                    
+                    // Interactive glow matching mouse movement coordinates
+                    float dist = distance(uv, mouse);
+                    float mouseGlow = smoothstep(0.4, 0.0, dist) * 0.15;
+                    vec3 glowColor = vec3(0.22, 0.74, 0.97) * mouseGlow; // Cyber Blue
+                    
+                    gl_FragColor = vec4(baseColor + glowColor, 1.0);
+                }
+            `;
+            
+            function compileShader(type, src) {
+                const s = gl.createShader(type);
+                gl.shaderSource(s, src);
+                gl.compileShader(s);
+                return s;
+            }
+            
+            const prog = gl.createProgram();
+            gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vs));
+            gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fs));
+            gl.linkProgram(prog);
+            gl.useProgram(prog);
+            
+            const buf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+            
+            const pos = gl.getAttribLocation(prog, 'a_position');
+            gl.enableVertexAttribArray(pos);
+            gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+            
+            const uTime = gl.getUniformLocation(prog, 'u_time');
+            const uRes = gl.getUniformLocation(prog, 'u_resolution');
+            const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+            
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = window.innerHeight - e.clientY;
+            });
+            
+            function render(t) {
+                gl.viewport(0, 0, canvas.width, canvas.height);
+                gl.uniform1f(uTime, t * 0.001);
+                gl.uniform2f(uRes, canvas.width, canvas.height);
+                gl.uniform2f(uMouse, mouseX, mouseY);
+                gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+                requestAnimationFrame(render);
+            }
+            render(0);
+        })();
+    </script>
+</body>
+</html>

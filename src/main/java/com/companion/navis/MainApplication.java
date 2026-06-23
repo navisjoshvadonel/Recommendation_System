@@ -16,14 +16,15 @@ import java.util.List;
 
 public class MainApplication extends JFrame {
     
-    // Theme Colors
-    public static final Color PRIMARY      = Color.decode("#6366F1"); // Indigo 500
-    public static final Color SIDEBAR_BG   = Color.decode("#0F172A"); // Slate 900
-    public static final Color BG_LIGHT     = Color.decode("#F1F5F9"); // Slate 100
-    public static final Color TEXT_DARK    = Color.decode("#1E293B"); // Slate 800 (Charcoal)
-    public static final Color TEXT_DESC    = Color.decode("#475569"); // Slate 600
-    public static final Color BORDER       = Color.decode("#CBD5E1"); // Slate 300
+    // Theme Colors (Obsidian Deep Space)
+    public static final Color PRIMARY      = Color.decode("#38BDF8"); // Cyber Blue
+    public static final Color SIDEBAR_BG   = Color.decode("#010F1F"); // Surface Container Lowest
+    public static final Color BG_LIGHT     = Color.decode("#051424"); // Obsidian Dark Background
+    public static final Color TEXT_DARK    = Color.decode("#D4E4FA"); // Light Blue/White
+    public static final Color TEXT_DESC    = Color.decode("#94A3B8"); // Slate 400
+    public static final Color BORDER       = Color.decode("#1C2B3C"); // Surface Container High
     public static final Color WHITE        = Color.WHITE;
+    public static final Color ACCENT       = Color.decode("#BEF264"); // Electric Lime
 
     private UserDAO userDAO = new UserDAO();
     private RecommendationEngine engine = new RecommendationEngine();
@@ -202,6 +203,12 @@ public class MainApplication extends JFrame {
         JTextField txtUser = new JTextField("admin", 15);
         txtUser.setFont(new Font("Inter", Font.PLAIN, 14));
         txtUser.setForeground(TEXT_DARK);
+        txtUser.setBackground(new Color(18, 33, 49));
+        txtUser.setCaretColor(TEXT_DARK);
+        txtUser.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         card.add(txtUser, gbc);
         
         // Password
@@ -215,6 +222,12 @@ public class MainApplication extends JFrame {
         JPasswordField txtPass = new JPasswordField("admin123", 15);
         txtPass.setFont(new Font("Inter", Font.PLAIN, 14));
         txtPass.setForeground(TEXT_DARK);
+        txtPass.setBackground(new Color(18, 33, 49));
+        txtPass.setCaretColor(TEXT_DARK);
+        txtPass.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         card.add(txtPass, gbc);
         
         // Login Button
@@ -223,7 +236,7 @@ public class MainApplication extends JFrame {
         JButton btnLogin = new JButton("Login");
         btnLogin.setPreferredSize(new Dimension(200, 45));
         btnLogin.setBackground(PRIMARY);
-        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setForeground(Color.BLACK);
         btnLogin.setFont(new Font("Inter", Font.BOLD, 16));
         btnLogin.setFocusPainted(false);
         btnLogin.setBorderPainted(false);
@@ -288,6 +301,13 @@ public class MainApplication extends JFrame {
         gbc.gridx = 1;
         JTextField txtUser = new JTextField(15);
         txtUser.setFont(new Font("Inter", Font.PLAIN, 13));
+        txtUser.setForeground(TEXT_DARK);
+        txtUser.setBackground(new Color(18, 33, 49));
+        txtUser.setCaretColor(TEXT_DARK);
+        txtUser.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         card.add(txtUser, gbc);
         
         // Email
@@ -300,6 +320,13 @@ public class MainApplication extends JFrame {
         gbc.gridx = 1;
         JTextField txtEmail = new JTextField(15);
         txtEmail.setFont(new Font("Inter", Font.PLAIN, 13));
+        txtEmail.setForeground(TEXT_DARK);
+        txtEmail.setBackground(new Color(18, 33, 49));
+        txtEmail.setCaretColor(TEXT_DARK);
+        txtEmail.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         card.add(txtEmail, gbc);
         
         // Password
@@ -312,8 +339,15 @@ public class MainApplication extends JFrame {
         gbc.gridx = 1;
         JPasswordField txtPass = new JPasswordField(15);
         txtPass.setFont(new Font("Inter", Font.PLAIN, 13));
+        txtPass.setForeground(TEXT_DARK);
+        txtPass.setBackground(new Color(18, 33, 49));
+        txtPass.setCaretColor(TEXT_DARK);
+        txtPass.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         card.add(txtPass, gbc);
-
+ 
         // Diet Preference
         gbc.gridy = 4; gbc.gridx = 0;
         JLabel dietLabel = new JLabel("Diet Pref:");
@@ -324,8 +358,10 @@ public class MainApplication extends JFrame {
         gbc.gridx = 1;
         JComboBox<String> dietCombo = new JComboBox<>(new String[]{"Any", "Veg", "Non-Veg"});
         dietCombo.setFont(new Font("Inter", Font.PLAIN, 13));
+        dietCombo.setBackground(new Color(18, 33, 49));
+        dietCombo.setForeground(TEXT_DARK);
         card.add(dietCombo, gbc);
-
+ 
         // Budget Preference
         gbc.gridy = 5; gbc.gridx = 0;
         JLabel budgetLabel = new JLabel("Budget Pref:");
@@ -336,6 +372,8 @@ public class MainApplication extends JFrame {
         gbc.gridx = 1;
         JComboBox<String> budgetCombo = new JComboBox<>(new String[]{"Low", "Medium", "High"});
         budgetCombo.setFont(new Font("Inter", Font.PLAIN, 13));
+        budgetCombo.setBackground(new Color(18, 33, 49));
+        budgetCombo.setForeground(TEXT_DARK);
         card.add(budgetCombo, gbc);
         
         // Register Button
@@ -344,7 +382,7 @@ public class MainApplication extends JFrame {
         JButton btnRegister = new JButton("Register");
         btnRegister.setPreferredSize(new Dimension(200, 45));
         btnRegister.setBackground(PRIMARY);
-        btnRegister.setForeground(Color.WHITE);
+        btnRegister.setForeground(Color.BLACK);
         btnRegister.setFont(new Font("Inter", Font.BOLD, 15));
         btnRegister.setFocusPainted(false);
         btnRegister.setBorderPainted(false);
@@ -395,10 +433,10 @@ public class MainApplication extends JFrame {
     private JPanel createSearchPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BG_LIGHT);
-
+ 
         // Header
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(WHITE);
+        header.setBackground(SIDEBAR_BG);
         header.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createMatteBorder(0, 0, 1, 0, BORDER),
             new EmptyBorder(20, 30, 20, 30)
@@ -406,10 +444,11 @@ public class MainApplication extends JFrame {
         
         JLabel title = new JLabel("Recommendation Companion");
         title.setFont(new Font("Inter", Font.BOLD, 24));
+        title.setForeground(TEXT_DARK);
         header.add(title, BorderLayout.WEST);
-
+ 
         panel.add(header, BorderLayout.NORTH);
-
+ 
         // Controls
         JPanel controls = new JPanel(new GridBagLayout());
         controls.setOpaque(false);
@@ -421,6 +460,13 @@ public class MainApplication extends JFrame {
         searchField = new PlaceholderTextField("Enter your query here...");
         searchField.setFont(new Font("Inter", Font.PLAIN, 16));
         searchField.setPreferredSize(new Dimension(400, 45));
+        searchField.setForeground(TEXT_DARK);
+        searchField.setBackground(new Color(18, 33, 49));
+        searchField.setCaretColor(TEXT_DARK);
+        searchField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(BORDER, 1),
+            BorderFactory.createEmptyBorder(5, 8, 5, 8)
+        ));
         
         domainCombo = new JComboBox<>(new String[]{
             "All", "Food & restaurants", "Shopping & products", "Entertainment", 
@@ -429,29 +475,31 @@ public class MainApplication extends JFrame {
             "Professional Services", "Books & Media", "Software & Digital"
         });
         domainCombo.setPreferredSize(new Dimension(180, 45));
+        domainCombo.setBackground(new Color(18, 33, 49));
+        domainCombo.setForeground(TEXT_DARK);
         
         JButton btnSearch = new JButton("Search Recommendations");
         btnSearch.setPreferredSize(new Dimension(220, 45));
         btnSearch.setBackground(PRIMARY);
-        btnSearch.setForeground(WHITE);
+        btnSearch.setForeground(Color.BLACK);
         btnSearch.setFont(new Font("Inter", Font.BOLD, 14));
         btnSearch.setFocusPainted(false);
         btnSearch.setBorderPainted(false);
         btnSearch.setOpaque(true);
         btnSearch.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
+ 
         gbc.gridx = 0; gbc.weightx = 1.0;
         controls.add(searchField, gbc);
         gbc.gridx = 1; gbc.weightx = 0;
         controls.add(domainCombo, gbc);
         gbc.gridx = 2;
         controls.add(btnSearch, gbc);
-
+ 
         // Results Container
         JPanel resultsScrollContainer = new JPanel(new BorderLayout());
         resultsScrollContainer.setOpaque(false);
         resultsScrollContainer.add(controls, BorderLayout.NORTH);
-
+ 
         JPanel resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setBackground(BG_LIGHT);
@@ -459,20 +507,24 @@ public class MainApplication extends JFrame {
         
         JScrollPane scrollPane = new JScrollPane(resultsPanel);
         scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(BG_LIGHT);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         resultsScrollContainer.add(scrollPane, BorderLayout.CENTER);
         
         panel.add(resultsScrollContainer, BorderLayout.CENTER);
-
+ 
         btnSearch.addActionListener(e -> {
             String rawQuery = searchField.getText();
             String queryVal = rawQuery.equals("Enter your query here...") ? "" : rawQuery;
             
             resultsPanel.removeAll();
-            resultsPanel.add(new JLabel("Searching for related items..."));
+            JLabel searchingLbl = new JLabel("Searching for related items...");
+            searchingLbl.setForeground(TEXT_DARK);
+            searchingLbl.setFont(new Font("Inter", Font.PLAIN, 14));
+            resultsPanel.add(searchingLbl);
             resultsPanel.revalidate();
             resultsPanel.repaint();
-
+ 
             UserPreferences prefs = new UserPreferences();
             prefs.setSearchQuery(queryVal);
             prefs.setDomain((String) domainCombo.getSelectedItem());
@@ -494,7 +546,10 @@ public class MainApplication extends JFrame {
                 SwingUtilities.invokeLater(() -> {
                     resultsPanel.removeAll();
                     if (recs.isEmpty()) {
-                        resultsPanel.add(new JLabel("No matching results found."));
+                        JLabel noneLbl = new JLabel("No matching results found.");
+                        noneLbl.setForeground(TEXT_DARK);
+                        noneLbl.setFont(new Font("Inter", Font.PLAIN, 14));
+                        resultsPanel.add(noneLbl);
                     } else {
                         for (ScoredResult sr : recs) {
                             resultsPanel.add(createItemCard(sr));
@@ -588,8 +643,8 @@ public class MainApplication extends JFrame {
         card.setLayout(new BorderLayout(20, 20));
         card.setBorder(new EmptyBorder(25, 25, 25, 25));
         card.setMaximumSize(new Dimension(1000, 160));
-        card.setBackgroundColor(WHITE);
-
+        card.setBackgroundColor(new Color(18, 33, 49, 130));
+ 
         // Icon Panel on the Left
         JPanel leftPanel = new JPanel(new GridBagLayout());
         leftPanel.setOpaque(false);
@@ -620,12 +675,12 @@ public class MainApplication extends JFrame {
         } else if ("Entertainment".equalsIgnoreCase(category) || tags.contains("movie") || tags.contains("game") || tags.contains("entertainment") || tags.contains("cinema")) {
             iconPath = "assets/entertainment.png";
         }
-
+ 
         ImageIcon icon = null;
         if (iconPath != null) {
             icon = getIcon(iconPath);
         }
-
+ 
         if (icon != null) {
             Image img = icon.getImage();
             Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
@@ -644,7 +699,7 @@ public class MainApplication extends JFrame {
                     g2.setPaint(gp);
                     g2.fillOval(0, 0, getWidth(), getHeight());
                     
-                    g2.setColor(Color.WHITE);
+                    g2.setColor(Color.BLACK);
                     g2.setFont(new Font("Inter", Font.BOLD, 22));
                     FontMetrics fm = g2.getFontMetrics();
                     int x = (getWidth() - fm.stringWidth(firstChar)) / 2;
@@ -658,7 +713,7 @@ public class MainApplication extends JFrame {
             leftPanel.add(badgePanel);
         }
         card.add(leftPanel, BorderLayout.WEST);
-
+ 
         // Meta Info
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
@@ -668,15 +723,15 @@ public class MainApplication extends JFrame {
         nameLabel.setFont(new Font("Inter", Font.BOLD, 20));
         nameLabel.setForeground(TEXT_DARK);
         
-        JLabel descLabel = new JLabel("<html><body style='width: 400px'>" + result.getItem().getDescription() + "</body></html>");
+        JLabel descLabel = new JLabel("<html><body style='width: 400px; color: #94A3B8'>" + result.getItem().getDescription() + "</body></html>");
         descLabel.setFont(new Font("Inter", Font.PLAIN, 14));
         descLabel.setForeground(TEXT_DESC);
         
         JPanel tagsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 5));
         tagsPanel.setOpaque(false);
         JLabel priceLabel = new JLabel("$" + result.getItem().getPrice() + "  ");
-        priceLabel.setFont(new Font("Inter", Font.BOLD, 16));
-        priceLabel.setForeground(PRIMARY);
+        priceLabel.setFont(new Font("Space Mono", Font.BOLD, 16));
+        priceLabel.setForeground(ACCENT);
         
         JLabel scoreLabel = new JLabel("Rating: " + result.getItem().getRating() + " ★");
         scoreLabel.setFont(new Font("Inter", Font.PLAIN, 14));
@@ -684,13 +739,13 @@ public class MainApplication extends JFrame {
         
         tagsPanel.add(priceLabel);
         tagsPanel.add(scoreLabel);
-
+ 
         infoPanel.add(nameLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(descLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         infoPanel.add(tagsPanel);
-
+ 
         card.add(infoPanel, BorderLayout.CENTER);
         
         // Match Score Badge
@@ -712,8 +767,8 @@ public class MainApplication extends JFrame {
         // Like Button
         JButton likeBtn = new JButton("❤ Like");
         likeBtn.setFont(new Font("Inter", Font.BOLD, 12));
-        likeBtn.setForeground(Color.WHITE);
-        likeBtn.setBackground(Color.decode("#EC4899")); // Pink
+        likeBtn.setForeground(Color.BLACK);
+        likeBtn.setBackground(ACCENT);
         likeBtn.setFocusPainted(false);
         likeBtn.setBorderPainted(false);
         likeBtn.setOpaque(true);
@@ -726,7 +781,8 @@ public class MainApplication extends JFrame {
                     if (success) {
                         SwingUtilities.invokeLater(() -> {
                             likeBtn.setText("Liked");
-                            likeBtn.setBackground(Color.decode("#9CA3AF")); // Gray
+                            likeBtn.setBackground(new Color(28, 43, 59)); // Lighter dark card on hover/action
+                            likeBtn.setForeground(TEXT_DESC);
                             likeBtn.setEnabled(false);
                         });
                     }
@@ -741,19 +797,19 @@ public class MainApplication extends JFrame {
         rightPanel.add(badgePanel, BorderLayout.NORTH);
         rightPanel.add(likeBtn, BorderLayout.SOUTH);
         card.add(rightPanel, BorderLayout.EAST);
-
+ 
         // Hover Effect
         card.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                card.setBackgroundColor(Color.decode("#F8FAFC"));
+                card.setBackgroundColor(new Color(28, 43, 59, 185));
             }
             @Override
             public void mouseExited(java.awt.event.MouseEvent e) {
-                card.setBackgroundColor(WHITE);
+                card.setBackgroundColor(new Color(18, 33, 49, 130));
             }
         });
-
+ 
         return card;
     }
 
@@ -789,12 +845,7 @@ public class MainApplication extends JFrame {
     }
 
     public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {}
-
-        SwingUtilities.invokeLater(() -> {
-            new MainApplication().setVisible(true);
-        });
+        System.out.println("Starting Web Application Backend...");
+        com.companion.web.WebServer.startServer();
     }
 }
