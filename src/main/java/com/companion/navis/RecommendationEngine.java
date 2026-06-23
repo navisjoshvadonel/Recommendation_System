@@ -11,11 +11,37 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
+import com.companion.auth.Session;
+import com.companion.auth.UserRecord;
+import com.companion.auth.InteractionDAO;
 
 public class RecommendationEngine {
 
+    private static final ConcurrentHashMap<String, List<ScoredResult>> cache = new ConcurrentHashMap<>();
+    private InteractionDAO interactionDAO = new InteractionDAO();
+
     public List<ScoredResult> getRecommendations(UserPreferences prefs) {
+        UserRecord current = Session.getInstance().getCurrentUser();
+        int userId = current != null ? current.getId() : -1;
+        String cacheKey = userId + "_" + prefs.getSearchQuery() + "_" + prefs.getDomain() + "_" + prefs.getMinPrice() + "_" + prefs.getMaxPrice() + "_" + prefs.getDiet();
+        
+        if (cache.containsKey(cacheKey)) {
+            return new ArrayList<>(cache.get(cacheKey));
+        }
+
         List<ScoredResult> results = new ArrayList<>();
+        
+        Map<String, Double> domainWeights = new HashMap<>();
+        Set<Integer> likedItems = new HashSet<>();
+        if (userId != -1) {
+            domainWeights = interactionDAO.getUserDomainWeights(userId);
+            likedItems = interactionDAO.getLikedItems(userId);
+        }
         
         // Algorithm: Query Parsing & Semantic Extraction
         QueryAlgorithm.parseQuery(prefs);
@@ -51,20 +77,19 @@ public class RecommendationEngine {
                 pstmt.setString(paramIndex++, prefs.getDiet());
             }
 
-            // 4. Keyword Parameters
+            // 4. Keyword Parameters (Match Against boolean mode format)
             if (!keywords.isEmpty()) {
+                StringBuilder matchStr = new StringBuilder();
                 for (String word : keywords) {
-                    String likeParam = "%" + word + "%";
-                    pstmt.setString(paramIndex++, likeParam);
-                    pstmt.setString(paramIndex++, likeParam);
-                    pstmt.setString(paramIndex++, likeParam);
+                    matchStr.append("+").append(word).append("* ");
                 }
+                pstmt.setString(paramIndex++, matchStr.toString().trim());
             }
 
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 Item item = mapItem(rs);
-                double score = calculateScore(item, prefs, keywords);
+                double score = calculateScore(item, prefs, keywords, domainWeights, likedItems);
                 results.add(new ScoredResult(item, score));
             }
 
@@ -93,6 +118,11 @@ public class RecommendationEngine {
         }
 
         Collections.sort(results);
+        
+        // Add to cache (limit size to prevent memory leak)
+        if (cache.size() > 500) cache.clear();
+        cache.put(cacheKey, results);
+        
         return results;
     }
 
@@ -121,11 +151,20 @@ public class RecommendationEngine {
         return sb.toString();
     }
 
-    private double calculateScore(Item item, UserPreferences prefs, List<String> keywords) {
+    private double calculateScore(Item item, UserPreferences prefs, List<String> keywords, Map<String, Double> domainWeights, Set<Integer> likedItems) {
         double score = item.getRating() * 2.0; 
 
-        // Category Matching Boost
+        // Interaction-based Boost (Implicit Feedback)
+        if (likedItems.contains(item.getId())) {
+            score += 50.0; // Huge boost for items user explicitly liked
+        }
+        
         String itemDomain = item.getDomainCategory();
+        if (domainWeights.containsKey(itemDomain)) {
+            score += domainWeights.get(itemDomain); // Boost based on historical interaction count in this domain
+        }
+
+        // Category Matching Boost
         String preferredDomain = prefs.getDomain();
         if (preferredDomain == null || preferredDomain.equalsIgnoreCase("All")) {
             preferredDomain = prefs.getDetectedDomain();

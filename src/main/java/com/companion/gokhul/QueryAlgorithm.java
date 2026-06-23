@@ -90,6 +90,14 @@ public class QueryAlgorithm {
         for (String w : words) {
             if (w.length() > 1 && !STOP_WORDS.contains(w) && !constraintWords.contains(w) && !isNumeric(w)) {
                 keywords.add(w);
+                
+                // Basic synonym expansion
+                if (w.equals("laptop") || w.equals("pc")) keywords.add("computer");
+                else if (w.equals("phone")) keywords.add("mobile");
+                else if (w.equals("movie")) keywords.add("cinema");
+                else if (w.equals("food")) keywords.add("restaurant");
+                else if (w.equals("cheap")) keywords.add("affordable");
+                else if (w.equals("best")) keywords.add("top");
             }
         }
         return keywords;
@@ -128,14 +136,9 @@ public class QueryAlgorithm {
             sql.append(" AND (diet_type = ? OR diet_type IS NULL OR diet_type = '') ");
         }
 
-        // 4. Keyword Search
+        // 4. Keyword Search (Upgraded to FULLTEXT MATCH AGAINST)
         if (!keywords.isEmpty()) {
-            sql.append(" AND (");
-            for (int i = 0; i < keywords.size(); i++) {
-                if (i > 0) sql.append(" OR ");
-                sql.append(" LOWER(name) LIKE ? OR LOWER(tags) LIKE ? OR LOWER(description) LIKE ? ");
-            }
-            sql.append(") ");
+            sql.append(" AND MATCH(name, tags, description) AGAINST (? IN BOOLEAN MODE) ");
         }
 
         sql.append(" ORDER BY rating DESC LIMIT 1000"); 

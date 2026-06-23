@@ -99,7 +99,7 @@ public class AnalyticsDAO {
 
     public java.util.List<String> getRecentSearches(int userId) {
         java.util.List<String> list = new java.util.ArrayList<>();
-        String sql = "SELECT DISTINCT query_text FROM search_history WHERE user_id = ? AND query_text != '' ORDER BY searched_at DESC LIMIT 3";
+        String sql = "SELECT query_text FROM search_history WHERE user_id = ? AND query_text != '' GROUP BY query_text ORDER BY MAX(searched_at) DESC LIMIT 3";
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userId);

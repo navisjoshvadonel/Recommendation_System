@@ -708,7 +708,39 @@ public class MainApplication extends JFrame {
             BorderFactory.createEmptyBorder(5, 10, 5, 10)
         ));
         badgePanel.add(badge, BorderLayout.NORTH);
-        card.add(badgePanel, BorderLayout.EAST);
+        
+        // Like Button
+        JButton likeBtn = new JButton("❤ Like");
+        likeBtn.setFont(new Font("Inter", Font.BOLD, 12));
+        likeBtn.setForeground(Color.WHITE);
+        likeBtn.setBackground(Color.decode("#EC4899")); // Pink
+        likeBtn.setFocusPainted(false);
+        likeBtn.setBorderPainted(false);
+        likeBtn.setOpaque(true);
+        likeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        likeBtn.addActionListener(e -> {
+            UserRecord current = Session.getInstance().getCurrentUser();
+            if (current != null) {
+                BackgroundThreadManager.getInstance().execute(() -> {
+                    boolean success = new com.companion.auth.InteractionDAO().logInteraction(current.getId(), result.getItem().getId(), "like");
+                    if (success) {
+                        SwingUtilities.invokeLater(() -> {
+                            likeBtn.setText("Liked");
+                            likeBtn.setBackground(Color.decode("#9CA3AF")); // Gray
+                            likeBtn.setEnabled(false);
+                        });
+                    }
+                });
+            } else {
+                JOptionPane.showMessageDialog(card, "Please login to like items.");
+            }
+        });
+        
+        JPanel rightPanel = new JPanel(new BorderLayout(0, 10));
+        rightPanel.setOpaque(false);
+        rightPanel.add(badgePanel, BorderLayout.NORTH);
+        rightPanel.add(likeBtn, BorderLayout.SOUTH);
+        card.add(rightPanel, BorderLayout.EAST);
 
         // Hover Effect
         card.addMouseListener(new java.awt.event.MouseAdapter() {
